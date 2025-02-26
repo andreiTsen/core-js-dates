@@ -156,8 +156,18 @@ function isDateInPeriod(date, period) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const dates = new Date(date);
+  const month = dates.getUTCMonth() + 1;
+  const day = dates.getUTCDate();
+  const year = dates.getUTCFullYear();
+  let hours = dates.getUTCHours();
+  const minutes = dates.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = dates.getUTCSeconds().toString().padStart(2, '0');
+  const morningEvening = hours >= 12 ? 'PM' : 'AM';
+  hours %= 12;
+  hours = hours || 12;
+  return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds} ${morningEvening}`;
 }
 
 /**
@@ -172,8 +182,16 @@ function formatDate(/* date */) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  let count = 0;
+  const date = new Date(year, month - 1, 1);
+  while (date.getMonth() === month - 1) {
+    if (date.getDay() === 0 || date.getDay() === 6) {
+      count += 1;
+    }
+    date.setDate(date.getDate() + 1);
+  }
+  return count;
 }
 
 /**
@@ -189,8 +207,12 @@ function getCountWeekendsInMonth(/* month, year */) {
  * Date(2024, 0, 31) => 5
  * Date(2024, 1, 23) => 8
  */
-function getWeekNumberByDate(/* date */) {
-  throw new Error('Not implemented');
+function getWeekNumberByDate(date) {
+  const WEEK_IN_MS = 604800000;
+  const startOfYear = new Date(date.getFullYear(), 0, 1);
+  let weekCount = Math.ceil((date - startOfYear) / WEEK_IN_MS);
+  weekCount += startOfYear.getDay() === date.getDay() ? 1 : 0;
+  return weekCount;
 }
 
 /**
